@@ -15,7 +15,7 @@ export function MapWidget(props: Partial<Readonly<{
 	mapSettings: MapSettings;
 	mapState: MapState;
 	onMapStateChange: (mapState: Readonly<MapState>) => void;
-	tileLayerSettings: Readonly<TileLayerSettings>;
+	tileLayerSettings: ReadonlyArray<TileLayerSettings>;
 }>> & CommonProps) {
 	const [internalMapState, setInternalMapState] = useState<Readonly<MapState>>(() => {
 		return props.mapState ?? defaultMapState;
@@ -70,7 +70,20 @@ export function MapWidget(props: Partial<Readonly<{
 			height: entry.contentRect.height,
 		});
 	});
-	const tileLayerSettings = props.tileLayerSettings ?? defaultTileLayerSettings;
+	const tileLayerSettings = props.tileLayerSettings ?? [];
+	const layers = tileLayerSettings
+		.filter(item => item.enabled)
+		.map((layer, index) => {
+			return (
+				<TileLayer
+					key={index}
+					mapContext={mapContext}
+					mapSettings={mapSettings}
+					mapState={mapState}
+					tileLayerSettings={layer}
+				></TileLayer>
+			);
+		});
 	return <div
 		{...bindGesture()}
 		ref={mainElement}
@@ -83,8 +96,9 @@ export function MapWidget(props: Partial<Readonly<{
 			mapContext={mapContext}
 			mapSettings={mapSettings}
 			mapState={mapState}
-			tileLayerSettings={tileLayerSettings}
+			tileLayerSettings={defaultTileLayerSettings}
 		></TileLayer>
+		{layers}
 		{mapSettings.debug &&
 			<DebugOverlay style={{ left: 0, top: 0, minWidth: 300 }}>
 				{JSON.stringify({

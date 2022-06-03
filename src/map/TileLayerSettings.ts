@@ -1,6 +1,7 @@
 type GetUrl = (x: number, y: number, z: number) => string;
 
-class TileLayerSettingsClass {
+export class TileLayerSettingsClass {
+	readonly enabled: boolean = false;
 	readonly getTileUrl: GetUrl = (x, y, z) => `https://tile.openstreetmap.org/${z}/${x}/${y}.png`;
 	readonly tileSize: number = 256;
 	readonly maxZoom: number = 19;
